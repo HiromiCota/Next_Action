@@ -11,6 +11,7 @@ todo::todo()
 
 todo::~todo()
 {
+	destroyTree();
 }
 
 todo::superNode::superNode()
@@ -26,7 +27,9 @@ todo::superNode::~superNode()
 {
 	
 }
-
+/*
+ * Either starts the tree (why would it ever be empty?) or calls the recursive version
+ */
 void todo::insert(action* node)
 {
 	if (root != nullptr) //Not the first node; insert left recursively
@@ -35,7 +38,9 @@ void todo::insert(action* node)
 		root = node;
 	//If both the node and the root are nullptr, we don't need to do anything
 }
-
+/*
+ * Recurse until the last node of that level.
+ */
 void todo::insert(action* node, action* parent)
 {
 	if (parent->getSibling() == nullptr) //No sibling; insert
@@ -43,6 +48,11 @@ void todo::insert(action* node, action* parent)
 	else
 		insert(node, parent->getSibling()); //Sibling exists, traverse left and try again
 }
+/*
+ * Non-recursive part of findEasiestActions()
+ * This exists solely to prevent unneccessary checking for nullptrs. 
+ * All nodes passed to the overloaded version either exist or the pointers are bad.
+ */
 todo::superNode* todo::findEasiestActions()
 {
 	if (root == nullptr) // Ask for bad data, get bad data.
@@ -57,6 +67,11 @@ todo::superNode* todo::findEasiestActions()
 	return findEasiestActions(root); //There are at least two nodes. Start evaluating.
 }
 
+/*
+ * Returns a superNode with the lowest cost actions
+ * 
+ * Depends on compareSuperNodes()
+ */
 todo::superNode* todo::findEasiestActions(action* node)
 {
 	superNode* easiest;
@@ -75,8 +90,12 @@ todo::superNode* todo::findEasiestActions(action* node)
 	if (node->getPrereq() != nullptr) //Traverse right
 		temp = findEasiestActions(node->getPrereq());
 	compareSuperNodes(easiest, temp); //Store best values
-	return easiest;
+	delete temp; //Take care of your trash
+	return easiest; //Note: This isn't deleted because it's the return value, BUT SOMETHING NEEDS TO DELETE IT!
 }
+/*
+ * Determines which nodes have the lowest energy weights and assigns their pointers to best
+ */
 void todo::compareSuperNodes(superNode* best, superNode* temp)
 {
 	if (temp->getCreative() < best->getCreative())
@@ -87,6 +106,25 @@ void todo::compareSuperNodes(superNode* best, superNode* temp)
 		best->setMental(temp->getMentalPtr());
 	if (temp->getPhysical() < best->getPhysical())
 		best->setPhysical(temp->getPhysicalPtr());
+}
+void todo::destroyTree(action* node)
+{
+	if (node->getSibling() != nullptr)	// Trash all siblings
+		destroyTree(node->getSibling());
+	if (node->getPrereq() != nullptr)	// Trash all prereqs
+		destroyTree(node->getPrereq());
+	remove(node);						// Trash this node
+}
+/*
+ * This doesn't check for siblings or children. 
+ */
+void todo::remove(action* node)
+{
+	if (node->getParent()->getPrereq() == node) //Then, node is a prereq
+		node->getParent()->setPrereq(nullptr);
+	else
+		node->getParent()->setSibling(nullptr); //Node is a sibling
+	delete node;
 }
 
 

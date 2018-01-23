@@ -32,7 +32,10 @@ void action::setEnergy(weights totalSoFar)
 	energy.mental = totalSoFar.mental;
 	energy.physical = totalSoFar.physical;
 }
-
+/*
+ * I've rethought this implimentation. It's needlessly complicated. 
+ * I'm going to trash this and assume only leafs are valid actions, since that's what this implimentation assumes anyways
+ */
 struct weights action::getEnergy()
 {
 	if (this->prerequisite != nullptr)

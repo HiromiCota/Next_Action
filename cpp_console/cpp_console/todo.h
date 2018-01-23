@@ -39,20 +39,20 @@ class todo
 	public:
 		superNode();
 		~superNode();
-		int getCreative() { return this->creativePtr->getCreative(); }
-		int getEmotional() { return this->emotionalPtr->getEmotional(); }
-		int getPhysical() { return this->physicalPtr->getPhysical(); }
-		int getMental() { return this->mentalPtr->getMental(); }
-		action* getCreativePtr() { return this->creativePtr; }
-		action* getEmotionalPtr() { return this->emotionalPtr; }
-		action* getPhysicalPtr() { return this->physicalPtr; }
-		action* getMentalPtr() { return this->mentalPtr; }
-		void setNode(action* node, action* position) { if (node != nullptr) position = node; }
-		void setCreative(action* node) { setNode(node, this->creativePtr); }
-		void setEmotional(action* node) { setNode(node, this->emotionalPtr); }
-		void setPhysical(action* node) { setNode(node, this->physicalPtr); }
-		void setMental(action* node) { setNode(node, this->mentalPtr); }
-		void setAll(action* node) { setCreative(node); setEmotional(node); setMental(node); setPhysical(node); }
+		int getCreative()	{ return this->creativePtr->getCreative(); }
+		int getEmotional()	{ return this->emotionalPtr->getEmotional(); }
+		int getPhysical()	{ return this->physicalPtr->getPhysical(); }
+		int getMental()		{ return this->mentalPtr->getMental(); }
+		action* getCreativePtr()	{ return this->creativePtr; }
+		action* getEmotionalPtr()	{ return this->emotionalPtr; }
+		action* getPhysicalPtr()	{ return this->physicalPtr; }
+		action* getMentalPtr()		{ return this->mentalPtr; }
+		void setNode(action* node, action* position)	{ if (node != nullptr) position = node; }
+		void setCreative(action* node)					{ setNode(node, this->creativePtr); }
+		void setEmotional(action* node)					{ setNode(node, this->emotionalPtr); }
+		void setPhysical(action* node)					{ setNode(node, this->physicalPtr); }
+		void setMental(action* node)					{ setNode(node, this->mentalPtr); }
+		void setAll(action* node)						{ setCreative(node); setEmotional(node); setMental(node); setPhysical(node); }
 	};
 public:
 	todo();
@@ -62,17 +62,18 @@ public:
 	action* search(std::string title);
 	struct weights getEnergy(action *node);
 	void printEnergy(action *node);
+	// Note: file I/O not available this version. Check back tomorrow
 	void saveList();
 	void loadList();
-	void destroyTree();
-	action* getRoot() { return this->root; }
+	void destroyTree()		{ destroyTree(root); }
+	action* getRoot() const { return this->root; }
 	superNode* findEasiestActions();
 	void compareSuperNodes(superNode* best, superNode* temp);
 	// Note: None of these actually triggers findEasiestActions. Run it first, or get garbage data
-	action* findLowEmotional() { return this->easiest->getEmotionalPtr(); }
-	action* findLowCreative() {return this->easiest->getCreativePtr(); }
-	action* findLowPhysical() { return this->easiest->getPhysicalPtr(); }
-	action* findLowMental() { return this->easiest->getMentalPtr(); }
+	action* findLowEmotional()	{ return this->easiest->getEmotionalPtr(); }
+	action* findLowCreative()	{return this->easiest->getCreativePtr(); }
+	action* findLowPhysical()	{ return this->easiest->getPhysicalPtr(); }
+	action* findLowMental()		{ return this->easiest->getMentalPtr(); }
 
 private:	
 	void remove(action *node);
