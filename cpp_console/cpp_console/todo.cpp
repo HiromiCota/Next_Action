@@ -41,12 +41,33 @@ void todo::insert(action* node)
 /*
  * Recurse until the last node of that level.
  */
-void todo::insert(action* node, action* parent)
+void todo::insert(action* node, action* sibling)
 {
-	if (parent->getSibling() == nullptr) //No sibling; insert
-		parent->setSibling(node);
+	if (sibling->getSibling() == nullptr) //No sibling; insert
+		sibling->setSibling(node);
 	else
-		insert(node, parent->getSibling()); //Sibling exists, traverse left and try again
+		insert(node, sibling->getSibling()); //Sibling exists, traverse left and try again
+}
+/*
+ * Add a prereq. If one already exists, insert this node ahead of it.
+ * 
+ *  Node can be a tree. This function will handle it 
+ */
+void todo::addPreReq(action* node, action* parent)
+{
+	if (parent->getPrereq() != nullptr) { 
+		// There is the possibility that node is a tree. If it is, we need to prevent orphaned nodes
+		action* endPoint = node;
+				
+		while (endPoint->getPrereq() != nullptr) // Traverse pre-reqs in the incoming tree until the end
+			endPoint = endPoint->getPrereq();
+
+		//End of node tree found. Connecting old prereqs to the back of the new ones.
+		endPoint->setPrereq(parent->getPrereq());			
+	}
+	//Now node can safely be connected to parent.
+	parent->setPrereq(node);
+	
 }
 /*
  * Non-recursive part of findEasiestActions()

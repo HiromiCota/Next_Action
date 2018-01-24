@@ -58,6 +58,7 @@ public:
 	todo();
 	~todo();
 	void insert(action* node);
+	void addPreReq(action* node, action* parent);
 
 	action* search(std::string title);
 	struct weights getEnergy(action *node);
@@ -77,7 +78,7 @@ public:
 
 private:	
 	void remove(action *node);
-	void insert(action* node, action* parent);
+	void insert(action* node, action* sibling);
 	void destroyTree(action *node);
 	superNode* findEasiestActions(action* node);
 
