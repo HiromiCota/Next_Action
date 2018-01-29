@@ -5,21 +5,22 @@ After the initial C++ version, I will port it to Java and C# to provide pretty G
 The C++ version will probably remain a console app unless I really feel like messing with MFC.
 
 Basic concept:
-A todo list is an unordered binary tree of actions.
-Each action can have siblings (actions that can be completed before or after it)
-Each action can also have prerequisites (actions that MUST be completed BEFORE it)
-
-Thus, any action with a nullptr prerequisite is an action that is available to be completed.
-Any actions with a prerequisite cannot be completed.
-
+A todo list is a linked list of actions.
+Each action can have its own linked list of actions.
+In this way, a todo list can branch infinitely, but it assumed to generally be a linear set of actions.
 e.g.
-"Get a job" -- "Prepare code sample" -- "Debug" -- "Write functions" -- "Name functions" -- "Sketch data structures"
-  |	              		|
-"Brush teeth"   "Tailor resume"
+"Get a job"
+  "Prepare code sample"
+    "Debug"
+    "Write functions"
+    "Name functions"
+    "Sketch data structures"
+  "Tailor resume"
+"Brush teeth"   
 
-"Get a job" has the prerequisites of "Prepare code sample" and "Tailor resume"
+"Get a job" has the prerequisite actions of "Prepare code sample" and "Tailor resume"
 "Tailor resume" is part of "Get a job," but can be done before or after "Prepare code sample"
-"Debug" requires that everything to its right be completed first.
+"Debug" requires everything below it (at the same or greater level of indention).
 "Brush teeth" has no prerequisites, thus can be done at any point.
 
 Possible actions are: "Brush teeth", "Tailor resume", and "Sketch data structures"
