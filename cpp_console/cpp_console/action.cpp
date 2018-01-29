@@ -1,53 +1,35 @@
 #include "action.h"
 
 
-
-action::action()
-{
-	this->setSibling(nullptr);
-	this->setPrereq(nullptr);
-	this->setParents(nullptr);
-	this->setDescription("Default description.");
-	this->setTitle("Default Title");
-	this->setEnergy(empty);
-}
-action::action(std::string title, std::string desc, int creative, int physical, int mental, int emotional)
-{
-	this->setTitle(title);
-	this->setDescription(desc);
-	this->setEnergy(weights{ creative, physical, mental, emotional });
-	this->setSibling(nullptr);
-	this->setPrereq(nullptr);
-}
-
-
-action::~action()
-{
-}
-
-void action::setEnergy(weights totalSoFar)
-{
-	energy.creative = totalSoFar.creative;
-	energy.emotional = totalSoFar.emotional;
-	energy.mental = totalSoFar.mental;
-	energy.physical = totalSoFar.physical;
-}
-/*
- * I've rethought this implimentation. It's needlessly complicated. 
- * I'm going to trash this and assume only leafs are valid actions, since that's what this implimentation assumes anyways
- */
-struct weights action::getEnergy()
-{
-	if (this->prerequisite != nullptr)
+namespace NextAction {
+	action::action()
 	{
-		struct weights temp = this->prerequisite->getEnergy();
-		temp.creative += this->energy.creative;
-		temp.emotional += this->energy.emotional;
-		temp.mental += this->energy.mental;
-		temp.physical += this->energy.physical;
-		return temp;
+		this->prerequisites = nullptr;
+		this->setDescription("Default action description.");
+		this->setTitle("Default Next Action");
+		this->setEnergy(empty);
+		//Note: reader is undefined until prerequisites has something.	
 	}
-	else
-		return this->energy;
-}
+	action::action(string title, string desc, int creative, int physical, int mental, int emotional)
+	{
+		this->prerequisites = nullptr;
+		this->setTitle(title);
+		this->setDescription(desc);
+		this->setEnergy(weights{ creative, physical, mental, emotional });
+	}
 
+
+	action::~action()
+	{
+	}
+
+	void action::setEnergy(weights totalSoFar)
+	{
+		energy.creative = totalSoFar.creative;
+		energy.emotional = totalSoFar.emotional;
+		energy.mental = totalSoFar.mental;
+		energy.physical = totalSoFar.physical;
+	}
+
+
+}

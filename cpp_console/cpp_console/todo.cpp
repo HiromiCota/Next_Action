@@ -1,151 +1,167 @@
 #include "todo.h"
 #include <ppltasks.h>
 
-
-todo::todo()
-{
-	root = nullptr;
-	easiest = new superNode();	
-}
-
-
-todo::~todo()
-{
-	destroyTree();
-}
-
-todo::superNode::superNode()
-{
-	setCreative(nullptr);
-	setEmotional(nullptr);
-	setPhysical(nullptr);
-	setMental(nullptr);
-}
-
-
-todo::superNode::~superNode()
-{
-	
-}
-/*
- * Either starts the tree (why would it ever be empty?) or calls the recursive version
- */
-void todo::insert(action* node)
-{
-	if (root != nullptr) //Not the first node; insert left recursively
-		insert(node, root);
-	else if (node != nullptr) //The first node; just stick it at root
-		root = node;
-	//If both the node and the root are nullptr, we don't need to do anything
-}
-/*
- * Recurse until the last node of that level.
- */
-void todo::insert(action* node, action* sibling)
-{
-	if (sibling->getSibling() == nullptr) //No sibling; insert
-		sibling->setSibling(node);
-	else
-		insert(node, sibling->getSibling()); //Sibling exists, traverse left and try again
-}
-/*
- * Add a prereq. If one already exists, insert this node ahead of it.
- * 
- *  Node can be a tree. This function will handle it 
- */
-void todo::addPreReq(action* node, action* parent)
-{
-	if (parent->getPrereq() != nullptr) { 
-		// There is the possibility that node is a tree. If it is, we need to prevent orphaned nodes
-		action* endPoint = node;
-				
-		while (endPoint->getPrereq() != nullptr) // Traverse pre-reqs in the incoming tree until the end
-			endPoint = endPoint->getPrereq();
-
-		//End of node tree found. Connecting old prereqs to the back of the new ones.
-		endPoint->setPrereq(parent->getPrereq());			
-	}
-	//Now node can safely be connected to parent.
-	parent->setPrereq(node);
-	
-}
-/*
- * Non-recursive part of findEasiestActions()
- * This exists solely to prevent unneccessary checking for nullptrs. 
- * All nodes passed to the overloaded version either exist or the pointers are bad.
- */
-todo::superNode* todo::findEasiestActions()
-{
-	if (root == nullptr) // Ask for bad data, get bad data.
-		return nullptr;
-	if (root->getSibling() == nullptr && root->getPrereq() == nullptr) // Tree is empty. Root is the only possible node.
+namespace NextAction {
+	todo::todo()
 	{
-		superNode* empty;
-		empty = new superNode();
-		empty->setAll(root);
-		return empty;
+		theseActions = new TodoList();
+		easiest = new superNode();
 	}
-	return findEasiestActions(root); //There are at least two nodes. Start evaluating.
-}
-
-/*
- * Returns a superNode with the lowest cost actions
- * 
- * Depends on compareSuperNodes()
- */
-todo::superNode* todo::findEasiestActions(action* node)
-{
-	superNode* easiest;
-	easiest = new superNode();
-	superNode* temp;
-	temp = new superNode();
-	
-	easiest->setAll(node);
-	
-	// Traverse the whole tree, looking for values. If the values are better than the easiest, copy.
-	if (node->getSibling() == nullptr && node->getPrereq() == nullptr) // This is a leaf, therefore nothing below is better. Go back up.
-		return easiest;
-	if (node->getSibling() != nullptr) //Traverse left
-		temp = findEasiestActions(node->getSibling()); 
-	compareSuperNodes(easiest, temp); //Store best values
-	if (node->getPrereq() != nullptr) //Traverse right
-		temp = findEasiestActions(node->getPrereq());
-	compareSuperNodes(easiest, temp); //Store best values
-	delete temp; //Take care of your trash
-	return easiest; //Note: This isn't deleted because it's the return value, BUT SOMETHING NEEDS TO DELETE IT!
-}
-/*
- * Determines which nodes have the lowest energy weights and assigns their pointers to best
- */
-void todo::compareSuperNodes(superNode* best, superNode* temp)
-{
-	if (temp->getCreative() < best->getCreative())
-		best->setCreative(temp->getCreativePtr());
-	if (temp->getEmotional() < best->getEmotional())
-		best->setEmotional(temp->getEmotionalPtr());
-	if (temp->getMental() < best->getMental())
-		best->setMental(temp->getMentalPtr());
-	if (temp->getPhysical() < best->getPhysical())
-		best->setPhysical(temp->getPhysicalPtr());
-}
-void todo::destroyTree(action* node)
-{
-	if (node->getSibling() != nullptr)	// Trash all siblings
-		destroyTree(node->getSibling());
-	if (node->getPrereq() != nullptr)	// Trash all prereqs
-		destroyTree(node->getPrereq());
-	remove(node);						// Trash this node
-}
-/*
- * This doesn't check for siblings or children. 
- */
-void todo::remove(action* node)
-{
-	if (node->getParent()->getPrereq() == node) //Then, node is a prereq
-		node->getParent()->setPrereq(nullptr);
-	else
-		node->getParent()->setSibling(nullptr); //Node is a sibling
-	delete node;
-}
 
 
+	todo::~todo()
+	{
+		removePrereqs();
+	}
+
+	todo::superNode::superNode()
+	{
+		setCreative(nullptr);
+		setEmotional(nullptr);
+		setPhysical(nullptr);
+		setMental(nullptr);
+	}
+
+
+	todo::superNode::~superNode()
+	{
+
+	}
+	/*
+	 * Either starts the tree (why would it ever be empty?) or calls the recursive version
+	 */
+	void todo::insert(action* node)
+	{
+		//No longer functional because of the new datastructure
+	}
+	/*
+	 * Recurse until the last node of that level.
+	 */
+	void todo::insert(action* node, action* sibling)
+	{
+		//No longer functional because of the new datastructure
+	}
+	/*
+	 * Add a prereq. If one already exists, insert this node ahead of it.
+	 *
+	 *  Node can be a tree. This function will handle it
+	 */
+	void todo::addPreReq(action* node, action* parent)
+	{
+		//No longer functional because of the new datastructure
+
+	}
+	/*
+	 * Non-recursive part of findEasiestActions()
+	 * This exists solely to prevent unneccessary checking for nullptrs.
+	 * All nodes passed to the overloaded version either exist or the pointers are bad.
+	 */
+	todo::superNode* todo::findEasiestActions()
+	{
+		//No longer functional because of the new datastructure
+	}
+
+	/*
+	 * Returns a superNode with the lowest cost actions
+	 *
+	 * Depends on compareSuperNodes()
+	 */
+	todo::superNode* todo::findEasiestActions(action* node)
+	{
+		superNode* easiest;
+		easiest = new superNode();
+		superNode* temp;
+		temp = new superNode();
+
+		//This is no longer functional because of the datastructure revision
+
+		easiest->setAll(node);
+
+		// Traverse the whole tree, looking for values. If the values are better than the easiest, copy.
+
+		compareSuperNodes(easiest, temp); //Store best values
+		delete temp; //Take care of your trash
+		return easiest; //Note: This isn't deleted because it's the return value, BUT SOMETHING NEEDS TO DELETE IT!
+	}
+	/*
+	 * Determines which nodes have the lowest energy weights and assigns their pointers to best
+	 */
+	void todo::compareSuperNodes(superNode* best, superNode* temp)
+	{
+		if (temp->getCreative() < best->getCreative())
+			best->setCreative(temp->getCreativePtr());
+		if (temp->getEmotional() < best->getEmotional())
+			best->setEmotional(temp->getEmotionalPtr());
+		if (temp->getMental() < best->getMental())
+			best->setMental(temp->getMentalPtr());
+		if (temp->getPhysical() < best->getPhysical())
+			best->setPhysical(temp->getPhysicalPtr());
+	}
+	/*
+	 * No parameter version defined in .h
+	 */
+	void todo::removePrereqs(TodoList* prereqs)
+	{
+		// Traverse list, trash actions
+		for (int i =0; i < prereqs->size();i++)
+		{
+			iter firstNode = prereqs->begin();
+			removePrereqs(firstNode->getPrereqs()); //Recurse through all possible prereqs of this node.
+			prereqs->erase(firstNode);
+		}
+		//Now, trash this list
+		delete prereqs;
+	}
+	/*
+	 * This doesn't check for siblings or children.
+	 */
+	void todo::remove(action* node)
+	{
+		//Find node in TodoList, then blow it away.
+	}
+	/* Serialization schema
+	 * int string string int int int int \n
+	 * int: Depth of this node. 0 means it belongs to the root todo. Anything else means it belongs to the first node above it with a lower number
+	 * string: Title
+	 * string: Desc
+	 * int: Creative
+	 * int: Physical
+	 * int: Mental
+	 * int: Emotional
+	 * 
+	 * e.g. 
+	 * 0 "Thing 1" "Do the thing" 0 0 0 2
+	 * 1 "Thing 2" "Do this, too" 2 0 2 0
+	 * 1 "Thing 3" "Do it" 9 9 9 8
+	 * 2 "Thing 4" "Gogogo" 4 4 3 2
+	 * 
+	 * Thing 4 is a child of Thing 3.
+	 * Things 2 and 3 and childs of Thing 1.
+	 * Thing 1 is the root list.
+	 */
+	void todo::saveList()
+	{
+		// Get file name
+
+		// Validate name
+
+		// Traverse and write
+
+		
+	}
+	void todo::loadList()
+	{
+		// Get file name
+
+		// Validate file
+
+		// Traverse and build
+
+		// Does the int at the beginning of the line match the previous line?
+		// If yes, then this goes into the same list that the previous node did
+		// If no, then this goes into the list IN the previous node.
+		// DON'T FORGET TO MAKE A NEW LIST; action's constructor defaults to nullptr for TodoList objects
+
+	}
+
+}
